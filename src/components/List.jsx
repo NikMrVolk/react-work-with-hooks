@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { useScroll } from '../hooks/useScroll'
+import { useInView } from 'react-intersection-observer'
 
 const List = () => {
 	const [todos, setTodos] = useState([])
@@ -7,8 +7,11 @@ const List = () => {
 	const limit = 20
 	const parentRef = useRef()
 	const childRef = useRef()
-	useScroll(parentRef, childRef, () => {
-		fetchTodos(page, limit)
+
+	const { ref } = useInView({
+		onChange: (inView) => {
+			if (inView) fetchTodos(page, limit)
+		},
 	})
 
 	function fetchTodos(page, limit) {
@@ -27,7 +30,7 @@ const List = () => {
 					{todo.id} {todo.title}
 				</div>
 			))}
-			<div ref={childRef} style={{ height: 20, background: 'green' }}></div>
+			<div ref={ref} style={{ height: 20, background: 'green' }}></div>
 		</div>
 	)
 }
